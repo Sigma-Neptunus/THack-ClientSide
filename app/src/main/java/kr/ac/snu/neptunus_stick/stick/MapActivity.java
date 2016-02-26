@@ -30,7 +30,7 @@ public class MapActivity extends AppCompatActivity {
         int TMapLanguage = TMapView.LANGUAGE_KOREAN;
 
         tMapView = (TMapView) findViewById(R.id.tmap);
-        tMapView.setSKPMapApiKey(getString(R.string.Tmap_apikey));
+        tMapView.setSKPMapApiKey(getString(R.string.tmap_apikey));
         tMapView.setLanguage(TMapLanguage);
         tMapView.setIconVisibility(true);
         tMapView.setZoomLevel(10);
