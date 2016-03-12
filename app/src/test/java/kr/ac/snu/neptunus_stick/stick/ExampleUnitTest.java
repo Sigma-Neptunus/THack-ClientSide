@@ -1,4 +1,4 @@
-package kr.ac.snu.neptunus_stick.stick;
+package kr.ac.snu.neptunus.olympus;
 
 import org.junit.Test;
 

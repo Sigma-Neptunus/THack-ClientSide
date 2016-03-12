@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="kr.ac.snu.neptunus.olympus.SearchActivity">
+    <item
+        android:title="settings"
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="ifRoom">
+    </item>
+    <item
+        android:title=""
+        android:id="@+id/history"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        app:showAsAction="ifRoom">
+    </item>
+</menu>
