@@ -61,9 +61,9 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
 
     private Chronometer timeView = null;
 
-    private long runningTime = 0;
-
     private LinearLayout bottomBar = null;
+
+    private int pointLevel = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
