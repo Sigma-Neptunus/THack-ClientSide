@@ -6,4 +6,7 @@
     android:layout_height="match_parent"
     tools:context="kr.ac.snu.neptunus.olympus.SettingActivity">
 
+    <include
+        layout="@layout/app_bar_setting">
+    </include>
 </LinearLayout>

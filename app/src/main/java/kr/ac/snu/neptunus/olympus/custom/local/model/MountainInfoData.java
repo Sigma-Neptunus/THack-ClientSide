@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by jjc93 on 2016-03-03.
  */
-public class MountainInfoData implements Serializable {
+public class MountainInfoData {
     private static String TAG = MountainInfoData.class.getName();
 
     private String thumbnailUrl;

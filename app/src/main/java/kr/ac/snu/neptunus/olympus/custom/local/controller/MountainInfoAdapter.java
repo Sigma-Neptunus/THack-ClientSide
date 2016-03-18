@@ -8,6 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import kr.ac.snu.neptunus.olympus.R;
@@ -21,28 +24,44 @@ public class MountainInfoAdapter extends BaseAdapter {
     private static final String TAG = MountainInfoAdapter.class.getName();
 
     private List<MountainInfoData> dataList = null;
-    private List<MountainInfoData> searchedDataList = null;
+    private ArrayList<MountainInfoData> searchedDataList = null;
     private Context context = null;
 
     public MountainInfoAdapter(Context context, List<MountainInfoData> dataList) {
         this.context = context;
         this.dataList = dataList;
+        this.searchedDataList = new ArrayList<>(dataList);
         notifyDataSetChanged();
     }
 
     public void setDataList(List<MountainInfoData> dataList) {
         this.dataList = dataList;
+        this.searchedDataList = new ArrayList<>(dataList);
+        notifyDataSetChanged();
+    }
+
+    public void filter(String name) {
+        if (!name.isEmpty()) {
+            this.searchedDataList = new ArrayList<>();
+            for (MountainInfoData m : dataList) {
+                if (SoundSearcher.matchString(m.getName(), name)) {
+                    searchedDataList.add(m);
+                }
+            }
+        } else {
+            this.searchedDataList = new ArrayList<>(dataList);
+        }
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return dataList.size();
+        return searchedDataList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return dataList.get(position);
+        return searchedDataList.get(position);
     }
 
     @Override
@@ -67,8 +86,9 @@ public class MountainInfoAdapter extends BaseAdapter {
             TextView height = GenericViewHolder.get(convertView, R.id.height);
             TextView location = GenericViewHolder.get(convertView, R.id.location);
 
+            Glide.with(context).load(data.getThumbnailUrl()).into(thumbnail);
             name.setText(data.getName());
-            height.setText(Double.toString(data.getHeight()));
+            height.setText(Double.toString(data.getHeight()) + "m");
             location.setText(data.getLocation());
 
             return convertView;

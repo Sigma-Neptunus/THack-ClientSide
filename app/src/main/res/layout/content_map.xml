@@ -11,11 +11,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.skp.Tmap.TMapView
+        <RelativeLayout
             android:id="@+id/tmap"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </com.skp.Tmap.TMapView>
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,6 +49,7 @@
                             android:textAlignment="center"/>
                     </LinearLayout>
                     <TextView
+                        android:id="@+id/step_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="-10dp"
@@ -108,10 +109,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:gravity="center">
-                <TextView
+                <Chronometer
+                    android:id="@+id/time_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="01:03:42"
                     android:textSize="20sp"
                     android:textColor="@color/colorPrimary"/>
             </LinearLayout>

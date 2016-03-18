@@ -3,7 +3,15 @@
     package="kr.ac.snu.neptunus.olympus">
 
     <!-- T Map SDK Permission -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_OWNER_DATA"></uses-permission>
+    <uses-permission android:name="android.permission.READ_OWNER_DATA"></uses-permission>
+
+    <!-- Location Permission -->
+    <!-- <uses-permission android:name="android.permission.INTERNET"></uses-permission> -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 
     <application
         android:allowBackup="true"

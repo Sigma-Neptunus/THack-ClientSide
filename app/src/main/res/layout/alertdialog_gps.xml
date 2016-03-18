@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="5dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@color/colorPrimary"
+        android:text="GPS 사용"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:textAlignment="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="GPS 설정이 꺼져 있습니다.\n정확한 산행을 위해서는\nGPS를 사용하는 것이 더 좋습니다.\nGPS 설정으로 가시겠습니까?"
+        android:textAlignment="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1.0"
+        android:divider="#000000"
+        android:showDividers="end|beginning">
+        <Button
+            android:id="@+id/pos_button"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:text="설정으로"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/colorPrimary"></View>
+        <Button
+            android:id="@+id/neg_button"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:text="취소"/>
+    </LinearLayout>
+
+</LinearLayout>
