@@ -1,13 +1,10 @@
 package kr.ac.snu.neptunus.olympus;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,13 +14,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,11 +28,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skp.Tmap.TMapGpsManager;
+import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
+import org.json.JSONObject;
+
 import kr.ac.snu.neptunus.olympus.custom.local.model.MountainInfoData;
+import kr.ac.snu.neptunus.olympus.custom.network.controller.SocketNetwork;
 
 public class MapActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
     private static String TAG = MapActivity.class.getName();
@@ -50,11 +48,12 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
     }
 
     private Toolbar toolbar = null;
+
     private RelativeLayout relativeLayout = null;
     private TMapView tMapView = null;
     private TMapGpsManager tMapGpsManager = null;
-    private TextView stepView = null;
 
+    private TextView stepView = null;
     private int step = 0;
     private SensorManager sensorManager = null;
     private Sensor stepSensor = null;
@@ -64,6 +63,9 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
     private LinearLayout bottomBar = null;
 
     private int pointLevel = 0;
+
+
+    private SocketNetwork network = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,8 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         initStepCounter();
         initTimer();
         initBottomBar();
+
+        initConnection();
     }
 
     @Override
@@ -105,9 +109,8 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         tMapView.setSKPMapApiKey(getString(R.string.tmap_apikey));
         tMapView.setLanguage(TMapLanguage);
         tMapView.setIconVisibility(true);
-        tMapView.setTrackingMode(true);
-        tMapView.setZoomLevel(15);
         tMapView.setMapType(TMapView.MAPTYPE_STANDARD);
+
         initTMapPath();
 
         relativeLayout.addView(tMapView);
@@ -119,6 +122,8 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
             tMapPolyLine.addLinePoint(mountainInfoData.getPoints().get(i));
         }
         tMapView.addTMapPath(tMapPolyLine);
+        tMapView.showFullPath(tMapPolyLine);
+        tMapView.MapZoomOut();
     }
 
     private void checkGps(boolean alert) {
@@ -218,7 +223,7 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
 
     private void initStepCounter() {
         stepView = (TextView) findViewById(R.id.step_view);
-        stepView.setText("" + step);
+        stepView.setText(String.format("%d",step));
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -331,10 +336,32 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         });
     }
 
+    private void initConnection() {
+        Log.d(TAG, "Connections");
+        network = new SocketNetwork();
+        network.defaultSettings();
+        network.setOnDataListener(new SocketNetwork.OnDataListener() {
+            @Override
+            public void useData(JSONObject jsonObject) {
+                Log.d(TAG, jsonObject.toString());
+            }
+        });
+        network.sendData("This is a String.");
+    }
+
     @Override
     public void onLocationChange(Location location) {
         Log.d(TAG, location.toString());
         tMapView.setLocationPoint(location.getLongitude(), location.getLatitude());
         tMapView.forceLayout();
+        relativeLayout.forceLayout();
+
+
+    }
+
+    private int closestPoint(TMapPoint[] points, Location current) {
+        float distance = 0;
+        TMapPolyLine tMapPolyLine = new TMapPolyLine();
+        return 0;
     }
 }

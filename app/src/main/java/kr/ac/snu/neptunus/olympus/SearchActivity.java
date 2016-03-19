@@ -57,10 +57,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings :
-                Intent intent0 = new Intent(this, SettingActivity.class);
-                startActivity(intent0);
-                return true;
             case R.id.history :
                 Intent intent1 = new Intent(this, HistoryActivity.class);
                 startActivity(intent1);
@@ -79,6 +75,7 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
 
     private void initSearchView() {
         searchView = (SearchView) findViewById(R.id.search_view);
+        searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
