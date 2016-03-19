@@ -114,7 +114,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-10dp"
                         android:layout_marginBottom="-15dp"
-                        android:text="110"
+                        android:text="0"
                         android:textSize="50sp"
                         android:textColor="@color/colorAccent"
                         android:textAlignment="center"

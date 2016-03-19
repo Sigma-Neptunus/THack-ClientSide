@@ -2,8 +2,6 @@ package kr.ac.snu.neptunus.olympus;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.hardware.input.InputManager;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,12 +49,12 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-
         if (!isSplashed) {
             SplashActivity.splash(this);
             isSplashed = true;
         }
+        setContentView(R.layout.activity_search);
+
         initToolbar();
         initSearchView();
         initListView();

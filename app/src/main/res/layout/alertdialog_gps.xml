@@ -12,7 +12,7 @@
         android:padding="10dp"
         android:background="@color/colorPrimary"
         android:text="GPS 사용"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textColor="#ffffff"
         android:textAlignment="center"
         fontPath="fonts/NanumSquareB.ttf"/>
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="GPS 설정이 꺼져 있습니다.\n정확한 산행을 위해서는\nGPS를 사용하는 것이 더 좋습니다.\nGPS 설정으로 가시겠습니까?"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textAlignment="center"
         fontPath="fonts/NanumSquareB.ttf"/>
     <LinearLayout
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:text="설정으로"
-            android:textSize="16sp"
+            android:textSize="14sp"
             fontPath="fonts/NanumSquareB.ttf"/>
         <View
             android:layout_width="1dp"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:text="취소"
-            android:textSize="16sp"
+            android:textSize="14sp"
             fontPath="fonts/NanumSquareB.ttf"/>
     </LinearLayout>
 
