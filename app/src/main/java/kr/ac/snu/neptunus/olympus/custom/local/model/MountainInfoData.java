@@ -15,13 +15,15 @@ public class MountainInfoData {
     private String name;
     private String location;
     private double height;
+    private double length;
     private List<TMapPoint> points;
 
-    public MountainInfoData(String t, String n, String l, double h, List<TMapPoint> ps) {
+    public MountainInfoData(String t, String n, String l, double h, double len, List<TMapPoint> ps) {
         thumbnailUrl = t;
         name = n;
         location = l;
         height = h;
+        length = len;
         points = ps;
     }
 
@@ -48,5 +50,9 @@ public class MountainInfoData {
 
     public List<TMapPoint> getPoints() {
         return points;
+    }
+
+    public double getLength() {
+        return length;
     }
 }

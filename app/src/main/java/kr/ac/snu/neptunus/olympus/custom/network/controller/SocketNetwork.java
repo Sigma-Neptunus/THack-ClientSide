@@ -80,6 +80,13 @@ public class SocketNetwork {
             socket.emit(sendDataEvent, value);
         }
     }
+    public void sendData(JSONObject value) {
+        final String sendDataEvent = "To_edison";
+        if (socket != null) {
+            Log.d(TAG, "Data to edison");
+            socket.emit(sendDataEvent, value);
+        }
+    }
 
     OnDataListener fromEdisonDataListener = null;
 

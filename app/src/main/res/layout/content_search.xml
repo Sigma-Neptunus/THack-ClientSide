@@ -1,25 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="kr.ac.snu.neptunus.olympus.SearchActivity"
-    tools:showIn="@layout/app_bar_search">
+    tools:showIn="@layout/app_bar_search"
+    tools:ignore="MissingPrefix">
 
-    <SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:iconifiedByDefault="false">
-    </SearchView>
+    <LinearLayout
+        android:layout_marginTop="13dp"
+        android:id="@+id/search_layout"
+        android:layout_width="330dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:weightSum="1.0">
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="21dp"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_mt"/>
+        <EditText
+            android:id="@+id/search_view"
+            android:layout_width="286dp"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textColor="#DE000000"
+            android:drawableEnd="@drawable/icon_position_now"
+            android:theme="@style/AppTheme.EditText"
+            fontPath="fonts/NanumSquareB.ttf"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="330dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="7dp"
+        android:layout_gravity="center"
+        android:background="#5C000000"></View>
 
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_view">
+        android:layout_below="@id/search_layout">
     </ListView>
-</RelativeLayout>
+</LinearLayout>

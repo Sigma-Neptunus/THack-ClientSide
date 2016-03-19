@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class SplashActivity extends Activity {
     private static String TAG = SplashActivity.class.getName();
 
@@ -28,5 +30,10 @@ public class SplashActivity extends Activity {
     public static void splash(Context context) {
         Intent intent = new Intent(context, SplashActivity.class);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

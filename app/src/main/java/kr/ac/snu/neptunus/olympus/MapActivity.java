@@ -1,10 +1,15 @@
 package kr.ac.snu.neptunus.olympus;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,10 +19,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,18 +34,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.skp.Tmap.TMapCircle;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
+import org.apache.http.conn.scheme.HostNameResolver;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import kr.ac.snu.neptunus.olympus.custom.local.model.MountainInfoData;
 import kr.ac.snu.neptunus.olympus.custom.network.controller.SocketNetwork;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MapActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
+public class MapActivity extends AppCompatActivity implements LocationListener {
     private static String TAG = MapActivity.class.getName();
 
     private static MountainInfoData mountainInfoData = null;
@@ -51,12 +62,14 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
 
     private RelativeLayout relativeLayout = null;
     private TMapView tMapView = null;
-    private TMapGpsManager tMapGpsManager = null;
+    private double GPSAccuracy = 0;
 
     private TextView stepView = null;
     private int step = 0;
     private SensorManager sensorManager = null;
     private Sensor stepSensor = null;
+
+    private TextView rateView = null;
 
     private Chronometer timeView = null;
 
@@ -66,6 +79,8 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
 
 
     private SocketNetwork network = null;
+
+    private Runnable rep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +92,61 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
             finish();
         }
 
+        initConnection();
+
         initToolbar();
         initTMap();
         checkGps(true);
         initStepCounter();
+        initHeartRate();
         initTimer();
         initBottomBar();
+    }
 
-        initConnection();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                showBackAlert();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showBackAlert();
+    }
+
+    private void showBackAlert() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        View alertView = getLayoutInflater().inflate(R.layout.alertdialog_back, null);
+
+        alertDialogBuilder.setView(alertView);
+
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+        Button posButton = (Button) alertView.findViewById(R.id.pos_button);
+        posButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MapActivity.super.onBackPressed();
+            }
+        });
+        Button negButton = (Button) alertView.findViewById(R.id.neg_button);
+        negButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.cancel();
+            }
+        });
+        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+            }
+        });
     }
 
     @Override
@@ -95,7 +157,9 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
 
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.action_bar);
-        toolbar.setTitle(mountainInfoData.getName());
+        toolbar.setTitle("");
+        TextView titleView = (TextView) toolbar.findViewById(R.id.action_bar_title);
+        titleView.setText(mountainInfoData.getName());
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -121,65 +185,37 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         for (int i = 0; i < mountainInfoData.getPoints().size(); i++) {
             tMapPolyLine.addLinePoint(mountainInfoData.getPoints().get(i));
         }
+        tMapPolyLine.setLineColor(0xff0000);
+        tMapPolyLine.setLineAlpha(127);
+        tMapPolyLine.setLineWidth(20);
         tMapView.addTMapPath(tMapPolyLine);
         tMapView.showFullPath(tMapPolyLine);
         tMapView.MapZoomOut();
     }
 
+    private LocationManager locationManager = null;
+
     private void checkGps(boolean alert) {
-        final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1.0f, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                }
-            });
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Log.d(TAG, "last loc = " + locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, 2000);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Log.d(TAG, "GP=" + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + ",NET=" + locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            if (alert) {
+            if (alert || !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 showGpsAlert();
             } else {
-                initTMapGpsManager(false);
+                initGps(false);
             }
         } else {
-            initTMapGpsManager(true);
+            initGps(true);
         }
     }
 
-    private Runnable repeat = null;
-
-    private void initTMapGpsManager(boolean isGps) {
-        tMapGpsManager = new TMapGpsManager(this);
-        tMapGpsManager.setMinTime(100);
-        tMapGpsManager.setMinDistance(0.01f);
-        tMapGpsManager.setProvider(isGps ? TMapGpsManager.GPS_PROVIDER : TMapGpsManager.NETWORK_PROVIDER);
-        tMapGpsManager.setLocationCallback();
-        tMapGpsManager.OpenGps();
-        tMapGpsManager.getLocation();
+    private void initGps(boolean isGps) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(isGps ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER, 100, 0.05f, this);
+        onLocationChanged(locationManager.getLastKnownLocation(isGps ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER));
     }
 
     private void showGpsAlert() {
@@ -211,7 +247,7 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                initTMapGpsManager(false);
+                checkGps(false);
             }
         });
     }
@@ -233,17 +269,24 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
                 if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                     currentTime = System.currentTimeMillis();
                     gapTime = currentTime - lastTime;
-                    if (gapTime > 400) {
+                    if (gapTime > 800) {
                         lastTime = currentTime;
                         x = Math.abs(event.values[SensorManager.DATA_X]);
                         y = Math.abs(event.values[SensorManager.DATA_Y]);
                         z = Math.abs(event.values[SensorManager.DATA_Z]);
 
-                        speed = (float) Math.sqrt((double)((x-lastX)*(x-lastX)+(y-lastY)*(y-lastY)+(z-lastZ)*(z-lastZ)))/gapTime;
+                        speed = (float) Math.sqrt((double) ((x - lastX) * (x - lastX) + (y - lastY) * (y - lastY) + (z - lastZ) * (z - lastZ))) / 800;
 
-                        if (speed > 0.04f) {
+                        if (speed > 0.005f) {
                             step++;
-                            stepView.setText("" + step);
+                            stepView.setText(String.format("%d", step));
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("step", step);
+                                network.sendData(jsonObject);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         lastX = x;
@@ -252,10 +295,15 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
                     }
                 }
             }
+
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         }, stepSensor, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    private void initHeartRate() {
+        rateView = (TextView) findViewById(R.id.rate_view);
     }
 
     private void initTimer() {
@@ -342,26 +390,141 @@ public class MapActivity extends AppCompatActivity implements TMapGpsManager.onL
         network.defaultSettings();
         network.setOnDataListener(new SocketNetwork.OnDataListener() {
             @Override
-            public void useData(JSONObject jsonObject) {
+            public void useData(final JSONObject jsonObject) {
                 Log.d(TAG, jsonObject.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (rateView != null) {
+                            rateView.setText(String.format("%d", jsonObject.optInt("pulse")));
+                        }
+                    }
+                });
             }
         });
-        network.sendData("This is a String.");
     }
 
     @Override
-    public void onLocationChange(Location location) {
-        Log.d(TAG, location.toString());
-        tMapView.setLocationPoint(location.getLongitude(), location.getLatitude());
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            Log.d(TAG, location.toString());
+            tMapView.setLocationPoint(location.getLongitude(), location.getLatitude());
+            TMapCircle tMapCircle = new TMapCircle();
+            tMapCircle.setCenterPoint(new TMapPoint(location.getLatitude(), location.getLongitude()));
+            Log.d(TAG, "" + location.getAccuracy());
+            tMapCircle.setRadius(location.getAccuracy());
+            tMapCircle.setAreaColor(0x550000ff);
+            tMapCircle.setAreaAlpha(127);
+            tMapView.addTMapCircle("acc", tMapCircle);
+            TMapPoint target = null;
+
+            int closestIndex = closestPoint(mountainInfoData.getPoints().toArray(new TMapPoint[mountainInfoData.getPoints().size()]), location);
+            if (closestIndex == pointLevel) {
+                if (distance(location, mountainInfoData.getPoints().get(closestIndex)) < 0.01) {
+                    pointLevel++;
+                    Log.d(TAG, "pL=" + pointLevel);
+                }
+            }
+            target = mountainInfoData.getPoints().get(pointLevel);
+            sendJSON(location.getLatitude(), location.getLongitude(), target.getLatitude(), target.getLongitude());
+        } else {
+            TMapPoint target = null;
+            target = mountainInfoData.getPoints().get(pointLevel);
+            sendJSON(tMapView.getLocationPoint().getLatitude(), tMapView.getLocationPoint().getLongitude(), target.getLatitude(), target.getLongitude());
+        }
         tMapView.forceLayout();
         relativeLayout.forceLayout();
+    }
 
-
+    private void sendJSON(double latc, double lonc, double latt, double lont){
+        try {
+            JSONObject jsonObject = new JSONObject("{\ncurrent:{\nlongitude:"+lonc+",\nlatitude:"+latc+"\n},\nto:{\nlongitude:"+lont+",\nlatitude:"+latt+"\n}\n}");
+            Log.d(TAG, jsonObject.toString());
+            if (network != null) {
+                network.sendData(jsonObject);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private int closestPoint(TMapPoint[] points, Location current) {
-        float distance = 0;
-        TMapPolyLine tMapPolyLine = new TMapPolyLine();
-        return 0;
+        int minIndex = 0;
+
+        for (int i = 0; i < points.length; i++) {
+            if (distance(current, points[minIndex]) > distance(current, points[i])) {
+                minIndex = i;
+            }
+        }
+        return minIndex;
+    }
+    private double closestDistance(TMapPoint[] points, Location current) {
+        double minDistance = Double.POSITIVE_INFINITY;
+
+        for (int i = 0; i < points.length - 1; i++) {
+            minDistance = Math.min(minDistance, distance(points[i], points[i+1], new TMapPoint(current.getLatitude(), current.getLongitude())));
+        }
+
+        return minDistance;
+    }
+    private double distance(Location location, TMapPoint tMapPoint) {
+        return distance(new TMapPoint(location.getLatitude(), location.getLongitude()), tMapPoint);
+    }
+    private double distance(TMapPoint tMapPoint1, TMapPoint tMapPoint2) {
+        double lon1 = tMapPoint1.getLongitude();
+        double lat1 = tMapPoint1.getLatitude();
+        double lon2 = tMapPoint2.getLongitude();
+        double lat2 = tMapPoint2.getLatitude();
+        double rad = 6371;
+
+        double a12 = Math.pow(Math.sin((lat1-lat2)/2), 2)+Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin((lon1-lon2)/2), 2);
+        double d12 = 2 * rad * Math.atan2(Math.sqrt(a12), Math.sqrt(1-a12));
+        return d12;
+    }
+    private double distance(TMapPoint line1, TMapPoint line2, TMapPoint tMapPoint) {
+        double lat1 = Math.toRadians(line1.getLatitude());
+        double lon1 = Math.toRadians(line1.getLongitude());
+        double lat2 = Math.toRadians(line2.getLatitude());
+        double lon2 = Math.toRadians(line2.getLongitude());
+        double lat3 = Math.toRadians(tMapPoint.getLatitude());
+        double lon3 = Math.toRadians(tMapPoint.getLongitude());
+        double rad = 6371;
+
+        double y13 = Math.sin(lat1 - lat3)*Math.cos(lon3);
+        double x13 = Math.cos(lon1)*Math.sin(lon3) - Math.sin(lon1)*Math.cos(lon3)*Math.cos(lat1-lat3);
+        double b13 = Math.atan2(y13, x13);
+
+        double y12 = Math.sin(lat1 - lat2)*Math.cos(lon2);
+        double x12 = Math.cos(lon1)*Math.sin(lon2) - Math.sin(lon1)*Math.cos(lon2)*Math.cos(lat1-lat2);
+        double b12 = Math.atan2(y12, x12);
+
+        double a13 = Math.pow(Math.sin((lat1-lat3)/2),2)+Math.cos(lat1)*Math.cos(lat3)*Math.pow(Math.sin((lon1-lon3)/2), 2);
+        double d13 = 2 * rad * Math.atan2(Math.sqrt(a13), Math.sqrt(1-a13));
+
+        Log.d(TAG, "d13 : " + d13);
+
+        double dxt = Math.abs(Math.asin(Math.sin(d13/rad)*Math.sin(b13-b12))*rad);
+        Log.d(TAG, "cds : " + dxt);
+        return dxt;
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d(TAG, provider + " : " + status);
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d(TAG, provider);
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d(TAG, provider);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

@@ -1,19 +1,32 @@
 package kr.ac.snu.neptunus.olympus;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.hardware.input.InputManager;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.TextWatcher;
+import android.text.style.TypefaceSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,13 +38,14 @@ import java.util.regex.Pattern;
 
 import kr.ac.snu.neptunus.olympus.custom.local.controller.MountainInfoAdapter;
 import kr.ac.snu.neptunus.olympus.custom.local.model.MountainInfoData;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SearchActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static String TAG = SearchActivity.class.getName();
     private static boolean isSplashed = false;
 
     private Toolbar toolbar = null;
-    private SearchView searchView = null;
+    private EditText searchView = null;
     private ListView listView = null;
 
     @Override
@@ -46,6 +60,12 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         initToolbar();
         initSearchView();
         initListView();
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mgr = (WindowManager)this.getSystemService(this.WINDOW_SERVICE);
+        mgr.getDefaultDisplay().getMetrics(metrics);
+
+        Log.d(TAG, "densityDPI = " + metrics.densityDpi);
     }
 
     @Override
@@ -67,6 +87,9 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
 
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.action_bar);
+        toolbar.setTitle("");
+        TextView titleView = (TextView) toolbar.findViewById(R.id.action_bar_title);
+        titleView.setText("산행을 시작하세요");
         setSupportActionBar(toolbar);
     }
 
@@ -74,20 +97,22 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     private MountainInfoAdapter adapter = null;
 
     private void initSearchView() {
-        searchView = (SearchView) findViewById(R.id.search_view);
+        searchView = (EditText) findViewById(R.id.search_view);
         searchView.clearFocus();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                adapter.filter(query);
-                return true;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
-                Log.d(TAG, newText);
-                return true;
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -116,6 +141,16 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         dummy = getInfoData(R.raw.bukhan);
         datas.add(dummy);
         dummy = getInfoData(R.raw.gwanggyo);
+        datas.add(dummy);
+        dummy = getInfoData(R.raw.duryun);
+        datas.add(dummy);
+        dummy = getInfoData(R.raw.mai);
+        datas.add(dummy);
+        dummy = getInfoData(R.raw.dobong);
+        datas.add(dummy);
+        dummy = getInfoData(R.raw.wolchul);
+        datas.add(dummy);
+        dummy = getInfoData(R.raw.mudeung);
         datas.add(dummy);
     }
 
@@ -149,17 +184,24 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         String name = points[1];
         String location = points[2];
         String height = points[3];
+        TMapPolyLine tMapPolyLine = new TMapPolyLine();
         for (int i = 4; i < points.length; i++) {
             matcher = pattern.matcher(points[i]);
             if (matcher.matches()) {
                 pointArray.add(new TMapPoint(Double.parseDouble(matcher.group(1)), Double.parseDouble(matcher.group(2))));
+                tMapPolyLine.addLinePoint(new TMapPoint(Double.parseDouble(matcher.group(1)), Double.parseDouble(matcher.group(2))));
             }
         }
-        return new MountainInfoData(thumbnail, name, location, Double.valueOf(height), (List) pointArray);
+        return new MountainInfoData(thumbnail, name, location, Double.valueOf(height), tMapPolyLine.getDistance(), (List) pointArray);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         return false;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

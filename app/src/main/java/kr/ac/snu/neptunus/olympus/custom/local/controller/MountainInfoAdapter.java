@@ -1,6 +1,8 @@
 package kr.ac.snu.neptunus.olympus.custom.local.controller;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +29,18 @@ public class MountainInfoAdapter extends BaseAdapter {
     private ArrayList<MountainInfoData> searchedDataList = null;
     private Context context = null;
 
+    private Typeface noto = null;
+    private Typeface roboit = null;
+    private Typeface roborg = null;
+
     public MountainInfoAdapter(Context context, List<MountainInfoData> dataList) {
         this.context = context;
         this.dataList = dataList;
+
+        noto = Typeface.createFromAsset(context.getAssets(), "fonts/NotoSansCJKkr-Medium.otf");
+        roboit = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-LightItalic.ttf");
+        roborg = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
+
         this.searchedDataList = new ArrayList<>(dataList);
         notifyDataSetChanged();
     }
@@ -84,12 +95,12 @@ public class MountainInfoAdapter extends BaseAdapter {
             ImageView thumbnail = GenericViewHolder.get(convertView, R.id.thumbnail);
             TextView name = GenericViewHolder.get(convertView, R.id.name);
             TextView height = GenericViewHolder.get(convertView, R.id.height);
-            TextView location = GenericViewHolder.get(convertView, R.id.location);
+            TextView length = GenericViewHolder.get(convertView, R.id.length);
 
             Glide.with(context).load(data.getThumbnailUrl()).into(thumbnail);
             name.setText(data.getName());
-            height.setText(Double.toString(data.getHeight()) + "m");
-            location.setText(data.getLocation());
+            height.setText(String.format("%.1f m", data.getHeight()));
+            length.setText(String.format("%2.2f km", data.getLength() / 1000));
 
             return convertView;
         } else {

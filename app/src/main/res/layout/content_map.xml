@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="kr.ac.snu.neptunus.olympus.MapActivity"
-    tools:showIn="@layout/app_bar_map">
+    tools:showIn="@layout/app_bar_map"
+    tools:ignore="MissingPrefix">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,101 +21,136 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="#4f000000"
+            android:background="#CC000000"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/bottom_bar"
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
+                android:layout_height="102dp"
                 android:layout_alignParentBottom="true"
                 android:weightSum="1.0">
                 <LinearLayout
                     android:layout_weight="0.5"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="7dp"
                     android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:gravity="center">
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="match_parent"/>
+                            android:layout_width="18dp"
+                            android:layout_height="27dp"
+                            android:layout_marginEnd="9dp"
+                            android:src="@drawable/icon_step"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="걸음"
-                            android:textColor="#ffffff"
-                            android:textAlignment="center"/>
+                            android:text="STEPS"
+                            android:textSize="12dp"
+                            android:textColor="#4cffffff"
+                            android:textAlignment="center"
+                            fontPath="fonts/Roboto-Regular.ttf"/>
                     </LinearLayout>
                     <TextView
                         android:id="@+id/step_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="-10dp"
                         android:text="2000"
                         android:textStyle="italic"
-                        android:textSize="40sp"
-                        android:textColor="@color/colorPrimary"
-                        android:textAlignment="center"/>
+                        android:textSize="50sp"
+                        android:layout_marginTop="-10dp"
+                        android:layout_marginBottom="-15dp"
+                        android:textColor="@color/colorAccent"
+                        android:textAlignment="center"
+                        fontPath="fonts/Roboto-LightItalic.ttf"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="50dp"
+                        android:paddingEnd="14dp"
                         android:text="steps"
-                        android:textStyle="italic"
-                        android:textColor="@color/colorPrimary"
-                        android:textAlignment="textEnd"/>
+                        android:textSize="12dp"
+                        android:textColor="@color/colorAccent"
+                        android:textAlignment="textEnd"
+                        fontPath="fonts/Roboto-Regular.ttf"/>
                 </LinearLayout>
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#575757">
+                </View>
                 <LinearLayout
                     android:layout_weight="0.5"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="7dp"
                     android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="5dp"
                         android:gravity="center">
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="match_parent"/>
+                            android:layout_width="20dp"
+                            android:layout_height="16dp"
+                            android:layout_marginEnd="9dp"
+                            android:src="@drawable/icon_heart"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="심박수"
-                            android:textColor="#ffffff"
-                            android:textAlignment="center"/>
+                            android:text="HEART RATE"
+                            android:textSize="12dp"
+                            android:textColor="#4cffffff"
+                            android:textAlignment="center"
+                            fontPath="fonts/Roboto-Regular.ttf"/>
                     </LinearLayout>
                     <TextView
+                        android:id="@+id/rate_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="-10dp"
+                        android:layout_marginTop="-10dp"
+                        android:layout_marginBottom="-15dp"
                         android:text="110"
-                        android:textStyle="italic"
-                        android:textSize="40sp"
-                        android:textColor="@color/colorPrimary"
-                        android:textAlignment="center"/>
+                        android:textSize="50sp"
+                        android:textColor="@color/colorAccent"
+                        android:textAlignment="center"
+                        fontPath="fonts/Roboto-LightItalic.ttf"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="50dp"
+                        android:paddingEnd="14dp"
                         android:text="bpm"
-                        android:textStyle="italic"
-                        android:textColor="@color/colorPrimary"
-                        android:textAlignment="textEnd"/>
+                        android:textSize="12dp"
+                        android:textColor="@color/colorAccent"
+                        android:textAlignment="textEnd"
+                        fontPath="fonts/Roboto-Regular.ttf"/>
                 </LinearLayout>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#575757">
+            </View>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="46dp"
                 android:gravity="center">
+                <ImageView
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_marginEnd="13dp"
+                    android:src="@drawable/icon_time"/>
                 <Chronometer
                     android:id="@+id/time_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="@color/colorPrimary"/>
+                    android:textSize="17sp"
+                    android:textColor="@color/colorPrimary"
+                    fontPath="fonts/Roboto-Regular.ttf"/>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
